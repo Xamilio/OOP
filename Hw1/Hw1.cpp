@@ -1,138 +1,136 @@
-﻿#include <iostream>
+#include <iostream>
 #include <cstring>
 using namespace std;
 
-class Student {
-private:
-    char* full_name;
-    char* birth_date;
-    char* phone;
-    char* city;
+class Car
+{
+    char* model;
+    char* color;
     char* country;
-    char* university;
-    char* university_city;
-    char* university_country;
-    char* group_number;
+    int year;
+    double price;
 
 public:
-    Student()
+    Car()
     {
-        full_name = birth_date = phone = city = country = university = university_city = university_country = group_number = 0;
+        model = color = country = nullptr;
+        year = 0;
+        price = 0;
     }
 
-    ~Student()
+    Car(const char* m, const char* c, const char* co, int y, double p)
     {
-        delete[] full_name;
-        delete[] birth_date;
-        delete[] phone;
-        delete[] city;
+        model = new char[strlen(m) + 1];
+        strcpy_s(model, strlen(m) + 1, m);
+
+        color = new char[strlen(c) + 1];
+        strcpy_s(color, strlen(c) + 1, c);
+
+        country = new char[strlen(co) + 1];
+        strcpy_s(country, strlen(co) + 1, co);
+
+        year = y;
+        price = p;
+    }
+    ~Car()
+    {
+        delete[] model;
+        delete[] color;
         delete[] country;
-        delete[] university;
-        delete[] university_city;
-        delete[] university_country;
-        delete[] group_number;
     }
 
-    void Init()
+    char* getModel()
     {
-        char buffer[100];
+        return model;
+    }
+    char* getColor()
+    {
+        return color;
+    }
+    char* getCountry()
+    {
+        return country;
+    }
+    int getYear()
+    {
+        return year;
+    }
+    double getPrice()
+    {
+        return price;
+    }
 
-        cout << "Enter full name: ";
-        cin.getline(buffer, 100);
-        full_name = new char[strlen(buffer) + 1];
-        strcpy_s(full_name, strlen(buffer) + 1, buffer);
+    void setModel(const char* m)
+    {
+        delete[] model;
+        model = new char[strlen(m) + 1];
+        strcpy_s(model, strlen(m) + 1, m);
+    }
 
-        cout << "Enter birth date: ";
-        cin.getline(buffer, 100);
-        birth_date = new char[strlen(buffer) + 1];
-        strcpy_s(birth_date, strlen(buffer) + 1, buffer);
+    void setColor(const char* c)
+    {
+        delete[] color;
+        color = new char[strlen(c) + 1];
+        strcpy_s(color, strlen(c) + 1, c);
+    }
 
-        cout << "Enter phone: ";
-        cin.getline(buffer, 100);
-        phone = new char[strlen(buffer) + 1];
-        strcpy_s(phone, strlen(buffer) + 1, buffer);
+    void setCountry(const char* co)
+    {
+        delete[] country;
+        country = new char[strlen(co) + 1];
+        strcpy_s(country, strlen(co) + 1, co);
+    }
 
-        cout << "Enter city: ";
-        cin.getline(buffer, 100);
-        city = new char[strlen(buffer) + 1];
-        strcpy_s(city, strlen(buffer) + 1, buffer);
+    void setYear(int y)
+    {
+        year = y;
+    }
 
-        cout << "Enter country: ";
-        cin.getline(buffer, 100);
-        country = new char[strlen(buffer) + 1];
-        strcpy_s(country, strlen(buffer) + 1, buffer);
+    void setPrice(double p)
+    {
+        price = p;
+    }
 
-        cout << "Enter university: ";
-        cin.getline(buffer, 100);
-        university = new char[strlen(buffer) + 1];
-        strcpy_s(university, strlen(buffer) + 1, buffer);
+    void init()
+    {
+        char b[100];
 
-        cout << "Enter university city: ";
-        cin.getline(buffer, 100);
-        university_city = new char[strlen(buffer) + 1];
-        strcpy_s(university_city, strlen(buffer) + 1, buffer);
+        cout << "Enter Model: ";
+        cin.getline(b, 100);
+        setModel(b);
 
-        cout << "Enter university country: ";
-        cin.getline(buffer, 100);
-        university_country = new char[strlen(buffer) + 1];
-        strcpy_s(university_country, strlen(buffer) + 1, buffer);
+        cout << "Enter Color: ";
+        cin.getline(b, 100);
+        setColor(b);
 
-        cout << "Enter group number: ";
-        cin.getline(buffer, 100);
-        group_number = new char[strlen(buffer) + 1];
-        strcpy_s(group_number, strlen(buffer) + 1, buffer);
+        cout << "Enter Country: ";
+        cin.getline(b, 100);
+        setCountry(b);
+
+        cout << "Enter Year: ";
+        cin >> year;
+
+        cout << "Enter Price: ";
+        cin >> price;
     }
 
     void print()
     {
-        cout << "Student info:\n";
-        cout << "Full name: " << full_name << endl;
-        cout << "Birth date: " << birth_date << endl;
-        cout << "Phone: " << phone << endl;
-        cout << "City: " << city << endl;
+        cout << "Car Info:" << endl;
+        cout << "Model: " << model << endl;
+        cout << "Color: " << color << endl;
         cout << "Country: " << country << endl;
-        cout << "University: " << university << endl;
-        cout << "University city: " << university_city << endl;
-        cout << "University country: " << university_country << endl;
-        cout << "Group number: " << group_number << endl;
-    }
-
-    char* GetFullName()
-    {
-        return full_name;
-    }
-
-    void SetFullName(const char* fn)
-    {
-        delete[] full_name;
-        full_name = new char[strlen(fn) + 1];
-        strcpy_s(full_name, strlen(fn) + 1, fn);
-    }
-
-    char* GetGroupNumber()
-    {
-        return group_number;
-    }
-
-    void SetGroupNumber(const char* gn)
-    {
-        delete[] group_number;
-        group_number = new char[strlen(gn) + 1];
-        strcpy_s(group_number, strlen(gn) + 1, gn);
+        cout << "Year: " << year << endl;
+        cout << "Price: $" << price << endl;
     }
 };
 
 int main()
 {
-    Student s;
-    s.Init();
-    s.print();
+    Car a1;
+    a1.init();
+    a1.print();
 
-    cout << "Full name: " << s.GetFullName() << endl;
-    s.SetFullName("Artem Lol");
-    cout << "Full name: " << s.GetFullName() << endl;
-
-    cout << "Group number: " << s.GetGroupNumber() << endl;
-    s.SetGroupNumber("Kn241-P");
-    cout << "Group number: " << s.GetGroupNumber() << endl;
+    Car a2("Audi", "Black", "Germany", 2020, 20000);
+    a2.print();
 }
