@@ -4,29 +4,29 @@ Fraction::Fraction()
 {
     numerator = rand() % 20;
     denominator = (rand() % 9) + 1;
-    cout << "Êîíñòðóêòîð ïî óìîë÷àíèþ: " << numerator << "/" << denominator << endl;
+    cout << "ÐšÐ¾Ð½ÑÑ‚Ñ€ÑƒÐºÑ‚Ð¾Ñ€ Ð¿Ð¾ ÑƒÐ¼Ð¾Ð»Ñ‡Ð°Ð½Ð¸ÑŽ: " << numerator << "/" << denominator << endl;
 }
 
 Fraction::Fraction(int a, int b) 
 {
     numerator = a;
     if (b == 0) {
-        cout << "Îøèáêà: çíàìåíàòåëü = 1" << endl;
+        cout << "ÐžÑˆÐ¸Ð±ÐºÐ°: Ð·Ð½Ð°Ð¼ÐµÐ½Ð°Ñ‚ÐµÐ»ÑŒ = 1" << endl;
         denominator = 1;
     }
     else {
         denominator = b;
     }
-    cout << "Êîíñòðóêòîð ñ ïàðàìåòðàìè: " << numerator << "/" << denominator << endl;
+    cout << "ÐšÐ¾Ð½ÑÑ‚Ñ€ÑƒÐºÑ‚Ð¾Ñ€ Ñ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ð°Ð¼Ð¸: " << numerator << "/" << denominator << endl;
 }
 
 Fraction::~Fraction() 
 {
-    cout << "Äåñòðóêòîð: " << numerator << "/" << denominator << endl;
+    cout << "Ð”ÐµÑÑ‚Ñ€ÑƒÐºÑ‚Ð¾Ñ€: " << numerator << "/" << denominator << endl;
 }
 
 void Fraction::Print() const {
-    cout << "Äðîáü: " << numerator << "/" << denominator << endl;
+    cout << "Ð”Ñ€Ð¾Ð±ÑŒ: " << numerator << "/" << denominator << endl;
 }
 
 Fraction Fraction::Sum(const Fraction& b) const
