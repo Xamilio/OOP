@@ -11,7 +11,7 @@ public:
     {
         numerator = a;
         if (b == 0) {
-            cout << "Ошибка: знаменатель = 1" << endl;
+            cout << "Ошибка знаменатель = 1" << endl;
             denominator = 1;
         }
         else {
