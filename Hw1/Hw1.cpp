@@ -1,74 +1,110 @@
 ﻿#include <iostream>
 using namespace std;
 
-class Fraction
+class Lift 
 {
-    int numerator;  
-    int denominator;
-
+    int minFloor;
+    int maxFloor;
+    int currentFloor;
+    bool isOn;
 public:
-    void Init(int a, int b)
+    Lift(int minF = 1, int maxF = 9) : minFloor(minF), maxFloor(maxF), currentFloor(minF), isOn(false) 
     {
-        numerator = a;
-        if (b == 0) {
-            cout << "Ошибка: знаменатель = 1" << endl;
-            denominator = 1;
+         
+    }
+
+    void TurnOn()
+    {
+        isOn = true;
+        cout << "Лифт включен.\n";
+    }
+    void TurnOff()
+    {
+        isOn = false;
+        cout << "Лифт выключен.\n";
+    }
+    bool IsOn() const 
+    {
+        return isOn;
+    }
+    int GetCurrentFloor() const
+    {
+        return currentFloor;
+    }
+    void SetRange(int minF, int maxF)
+    {
+        if (minF < maxF) 
+        {
+            minFloor = minF;
+            maxFloor = maxF;
+            currentFloor = minF;
         }
-        else {
-            denominator = b;
+    }
+    void Call(int floor) 
+    {
+        if (!isOn) 
+        {
+            cout << "Лифт не работает!\n";
+            return;
         }
+        if (floor < minFloor || floor > maxFloor)
+        {
+            cout << "Ошибка: такого этажа нет!\n";
+            return;
+        }
+        cout << "Лифт движется с " << currentFloor << " этажа на " << floor << " этаж...\n";
+        currentFloor = floor;
+        cout << "Лифт прибыл на этаж " << currentFloor << ".\n";
     }
-
-    void Init()
+    void Print() 
     {
-        numerator = rand() % 20;
-        denominator = (rand() % 9) + 1;
-    }
-
-    void Print()
-    {
-        cout << "Дробь: " << numerator << "/" << denominator << endl;
-    }
-
-    void Sum(Fraction& b)
-    {
-        int num = numerator * b.denominator + b.numerator * denominator;
-        int den = denominator * b.denominator;
-        cout << "Сумма: " << num << "/" << den << endl;
-    }
-
-    void Sub(Fraction& b)
-    {
-        int num = numerator * b.denominator - b.numerator * denominator;
-        int den = denominator * b.denominator;
-        cout << "Разность: " << num << "/" << den << endl;
-    }
-
-    void Mul(Fraction& b)
-    {
-        int num = numerator * b.numerator;
-        int den = denominator * b.denominator;
-        cout << "Произведение: " << num << "/" << den << endl;
-    }
-
-    void Div(Fraction& b)
-    {
-        int num = numerator * b.denominator;
-        int den = denominator * b.numerator;
-        cout << "Частное: " << num << "/" << den << endl;
+        cout << "---- Лифт ----\n";
+        cout << "Диапазон этажей: " << minFloor << " - " << maxFloor << endl;
+        cout << "Текущий этаж: " << currentFloor << endl;
+        cout << "Состояние: " << (isOn ? "Работает" : "Выключен") << endl;
     }
 };
 
-int main()
+int main() 
 {
-    Fraction A, B;
+    setlocale(LC_ALL, "ru");
+    Lift lift(1, 5);
 
-    A.Init(2, 3);
-    A.Print();
-    B.Init(3, 4);
-    B.Print();
-    A.Sum(B);
-    A.Sub(B);
-    A.Mul(B);
-    A.Div(B);
+    int choice;
+    do
+    {
+        cout << "\nМеню:\n";
+        cout << "1. Включить лифт\n";
+        cout << "2. Выключить лифт\n";
+        cout << "3. Вызвать лифт на этаж\n";
+        cout << "4. Показать состояние\n";
+        cout << "0. Выход\n";
+        cout << "Ваш выбор: ";
+        cin >> choice;
+
+        switch (choice) 
+        {
+        case 1:
+            lift.TurnOn();
+            break;
+        case 2:
+            lift.TurnOff();
+            break;
+        case 3: {
+            int floor;
+            cout << "Введите этаж: ";
+            cin >> floor;
+            lift.Call(floor);
+            break;
+        }
+        case 4:
+            lift.Print();
+            break;
+        case 0:
+            cout << "Программа завершена.\n";
+            break;
+        default:
+            cout << "Неверный выбор!\n";
+        }
+    } while (choice != 0);
 }
