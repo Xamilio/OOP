@@ -1,10 +1,12 @@
 #pragma once
 class Subject
 {
-public:
+private:
     char* name;
+public:
     Subject();
     ~Subject();
     void setName(const char* n);
+    const char* getName();
 };
 
