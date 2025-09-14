@@ -1,14 +1,19 @@
 #pragma once
 class Student
 {
-public:
+private:
     char* name;
     int* marks;
     int size;
+public:
     Student();
     ~Student();
     void setName(const char* n);
+    const char* getName();
     void setMarks(int s);
+    void setMark(int index, int value);
+    int getMark(int index);
+    int getSize();
 };
 
 
