@@ -1,136 +1,135 @@
-﻿#include <iostream>
-#include <cstring>
+#include <iostream>
+#include <cmath>
 using namespace std;
 
-class Car
+class RulonOboev
 {
-    char* model;
-    char* color;
-    char* country;
-    int year;
+public:
+    char name[20];
+    double width;
+    double length;
     double price;
 
+    RulonOboev(const char* n = "", double w = 0, double l = 0, double p = 0)
+    {
+        int i = 0;
+        for (; n[i] != '\0' && i < 19; i++)
+        {
+            name[i] = n[i];
+        }
+        name[i] = '\0';
+        width = w;
+        length = l;
+        price = p;
+    }
+
+    double getArea() const
+    {
+        return width * length;
+    }
+};
+
+class Komnata
+{
 public:
-    Car()
+    char name[20];
+    double length;
+    double width;
+    double height;
+    bool kleyitPotolok;
+
+    Komnata(const char* n = "", double dl = 0, double w = 0, double h = 0, bool potolok = false)
     {
-        model = color = country = nullptr;
-        year = 0;
-        price = 0;
+        int i = 0;
+        for (; n[i] != '\0' && i < 19; i++)
+        {
+            name[i] = n[i];
+        }
+        name[i] = '\0';
+        length = dl;
+        width = w;
+        height = h;
+        kleyitPotolok = potolok;
     }
 
-    Car(const char* m, const char* c, const char* co, int y, double p)
+    double getWallArea() const
     {
-        model = new char[strlen(m) + 1];
-        strcpy_s(model, strlen(m) + 1, m);
-
-        color = new char[strlen(c) + 1];
-        strcpy_s(color, strlen(c) + 1, c);
-
-        country = new char[strlen(co) + 1];
-        strcpy_s(country, strlen(co) + 1, co);
-
-        year = y;
-        price = p;
-    }
-    ~Car()
-    {
-        delete[] model;
-        delete[] color;
-        delete[] country;
+        return 2 * (length + width) * height;
     }
 
-    char* getModel()
+    double getCeilArea() const
     {
-        return model;
-    }
-    char* getColor()
-    {
-        return color;
-    }
-    char* getCountry()
-    {
-        return country;
-    }
-    int getYear()
-    {
-        return year;
-    }
-    double getPrice()
-    {
-        return price;
+        if (kleyitPotolok)
+        {
+            return length * width;
+        }
+        return 0;
     }
 
-    void setModel(const char* m)
+    double getTotalArea() const
     {
-        delete[] model;
-        model = new char[strlen(m) + 1];
-        strcpy_s(model, strlen(m) + 1, m);
+        return getWallArea() + getCeilArea();
+    }
+};
+
+class Kvartira
+{
+public:
+    Komnata* rooms;
+    int count;
+
+    Kvartira(int c)
+    {
+        count = c;
+        rooms = new Komnata[c];
     }
 
-    void setColor(const char* c)
+    ~Kvartira()
     {
-        delete[] color;
-        color = new char[strlen(c) + 1];
-        strcpy_s(color, strlen(c) + 1, c);
+        delete[] rooms;
     }
 
-    void setCountry(const char* co)
+    double getAllArea() const
     {
-        delete[] country;
-        country = new char[strlen(co) + 1];
-        strcpy_s(country, strlen(co) + 1, co);
-    }
-
-    void setYear(int y)
-    {
-        year = y;
-    }
-
-    void setPrice(double p)
-    {
-        price = p;
-    }
-
-    void init()
-    {
-        char b[100];
-
-        cout << "Enter Model: ";
-        cin.getline(b, 100);
-        setModel(b);
-
-        cout << "Enter Color: ";
-        cin.getline(b, 100);
-        setColor(b);
-
-        cout << "Enter Country: ";
-        cin.getline(b, 100);
-        setCountry(b);
-
-        cout << "Enter Year: ";
-        cin >> year;
-
-        cout << "Enter Price: ";
-        cin >> price;
-    }
-
-    void print()
-    {
-        cout << "Car Info:" << endl;
-        cout << "Model: " << model << endl;
-        cout << "Color: " << color << endl;
-        cout << "Country: " << country << endl;
-        cout << "Year: " << year << endl;
-        cout << "Price: $" << price << endl;
+        double total = 0;
+        for (int i = 0; i < count; i++)
+        {
+            total += rooms[i].getTotalArea();
+        }
+        return total;
     }
 };
 
 int main()
 {
-    Car a1;
-    a1.init();
-    a1.print();
+    setlocale(LC_ALL, "Russian");
 
-    Car a2("Audi", "Black", "Germany", 2020, 20000);
-    a2.print();
+    int nRooms;
+    cin >> nRooms;
+
+    Kvartira kvartira(nRooms);
+
+    for (int i = 0; i < nRooms; i++)
+    {
+        char name[20];
+        double dl, w, h;
+        int potolok;
+        cin >> name >> dl >> w >> h >> potolok;
+        kvartira.rooms[i] = Komnata(name, dl, w, h, potolok);
+    }
+
+    char rName[20];
+    double rw, rl, price;
+    cin >> rName >> rw >> rl >> price;
+
+    RulonOboev rulon(rName, rw, rl, price);
+
+    double totalArea = kvartira.getAllArea();
+    double areaPerRulon = rulon.getArea();
+    int needed = (int)ceil(totalArea / areaPerRulon);
+
+    cout << totalArea << "\n";
+    cout << areaPerRulon << "\n";
+    cout << needed << "\n";
+    cout << needed * rulon.price << "\n";
 }
