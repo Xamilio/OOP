@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cmath>
 #include <cstring>
 using namespace std;
 
@@ -83,6 +84,7 @@ int main()
     cin >> nRooms;
 
     Komnata* rooms = new Komnata[nRooms];
+
     for (int i = 0; i < nRooms; i++)
     {
         char temp[100];
