@@ -3,16 +3,19 @@
 
 Subject::Subject()
 {
-    name[0] = '\0';
+    name = 0;
 }
-
+Subject::~Subject()
+{
+    if (name) delete[] name;
+}
 void Subject::setName(const char* n)
 {
-    strncpy(name, n, 29);
-    name[29] = '\0';
+    if (name) delete[] name;
+    name = new char[strlen(n)+1];
+    strcpy(name,n);
 }
-
-const char* Subject::getName() consts
+const char* Subject::getName()
 {
     return name;
 }
