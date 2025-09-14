@@ -1,72 +1,55 @@
 #include "Group.h"
-#include <iostream>
 #include <cstring>
-using namespace std;
 
 Group::Group()
 {
-    name[0] = '\0';
-    students = nullptr;
-    countStudents = 0;
-    subjects = nullptr;
-    countSubjects = 0;
+    name = 0;
+    list = 0;
+    subList = 0;
+    countOfStudents = 0;
+    countOfSubs = 0;
 }
-
-Group::Group(const char* n, int studCount, int subjCount)
-{
-    strncpy(name, n, 29);
-    name[29] = '\0';
-
-    countStudents = studCount;
-    students = new Student[countStudents];
-
-    countSubjects = subjCount;
-    subjects = new Subject[countSubjects];
-}
-
 Group::~Group()
 {
-    delete[] students;
-    delete[] subjects;
+    if (name) delete[] name;
+    if (list) delete[] list;
+    if (subList) delete[] subList;
 }
-
-void Group::setStudent(int index, const Student& s)
+void Group::setName(const char* n)
 {
-    if (index >= 0 && index < countStudents)
-        students[index] = s;
+    if (name) delete[] name;
+    name = new char[strlen(n)+1];
+    strcpy(name,n);
 }
-
+const char* Group::getName()
+{
+    return name;
+}
+void Group::setStudents(int c)
+{
+    if (list) delete[] list;
+    countOfStudents = c;
+    list = new Student[c];
+}
 Student& Group::getStudent(int index)
 {
-    return students[index];
+    return list[index];
 }
-
-void Group::setSubject(int index, const Subject& s)
+int Group::getStudentCount()
 {
-    if (index >= 0 && index < countSubjects)
-        subjects[index] = s;
+    return countOfStudents;
 }
-
+void Group::setSubjects(int c)
+{
+    if (subList) delete[] subList;
+    countOfSubs = c;
+    subList = new Subject[c];
+}
 Subject& Group::getSubject(int index)
 {
-    return subjects[index];
+    return subList[index];
 }
-
-void Group::printMarks() const
+int Group::getSubjectCount()
 {
-    cout << "Таблица оценок:\n";
-    for (int i = 0; i < countStudents; i++)
-    {
-        cout << students[i].getName() << ": ";
-        for (int j = 0; j < countSubjects; j++)
-            cout << students[i].getMark(j) << " ";
-        cout << endl;
-    }
-}
-
-void Group::printAverages() const
-{
-    cout << "Средние оценки студентов:\n";
-    for (int i = 0; i < countStudents; i++)
-        cout << students[i].getName() << " = " << students[i].average() << endl;
+    return countOfSubs;
 }
