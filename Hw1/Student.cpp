@@ -3,53 +3,42 @@
 
 Student::Student()
 {
-    name[0] = '\0';
-    marks = nullptr;
+    name = 0;
+    marks = 0;
     size = 0;
 }
-
-Student::Student(const char* n, int subjCount)
-{
-    strncpy(name, n, 29);
-    name[29] = '\0';
-    size = subjCount;
-    marks = new int[size];
-    for (int i = 0; i < size; i++) marks[i] = 0;
-}
-
 Student::~Student()
 {
-    delete[] marks;
+    if (name) delete[] name;
+    if (marks) delete[] marks;
 }
-
 void Student::setName(const char* n)
 {
-    strncpy(name, n, 29);
-    name[29] = '\0';
+    if (name) delete[] name;
+    name = new char[strlen(n)+1];
+    strcpy(name,n);
 }
-
-const char* Student::getName() const
+const char* Student::getName()
 {
     return name;
 }
-
-void Student::setMark(int index, int mark)
+void Student::setMarks(int s)
 {
-    if (index >= 0 && index < size)
-        marks[index] = mark;
+    if (marks) delete[] marks;
+    size = s;
+    marks = new int[s];
+    for(int i=0;i<s;i++) marks[i]=0;
 }
-
-int Student::getMark(int index) const
+void Student::setMark(int index, int value)
 {
-    if (index >= 0 && index < size)
-        return marks[index];
-    return -1;
+    if(index>=0 && index<size) marks[index]=value;
 }
-
-double Student::average() const
+int Student::getMark(int index)
 {
-    if (size == 0) return 0;
-    int sum = 0;
-    for (int i = 0; i < size; i++) sum += marks[i];
-    return (double)sum / size;
+    if(index>=0 && index<size) return marks[index];
+    return 0;
+}
+int Student::getSize()
+{
+    return size;
 }
