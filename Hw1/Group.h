@@ -5,24 +5,21 @@
 class Group
 {
 private:
-    char name[30];
-    Student* students;
-    int countStudents;
-
-    Subject* subjects;
-    int countSubjects;
-
+    char* name;
+    Student* list;
+    int countOfStudents;
+    Subject* subList;
+    int countOfSubs;
 public:
     Group();
-    Group(const char* n, int studCount, int subjCount);
     ~Group();
-
-    void setStudent(int index, const Student& s);
+    void setName(const char* n);
+    const char* getName();
+    void setStudents(int c);
     Student& getStudent(int index);
-
-    void setSubject(int index, const Subject& s);
+    int getStudentCount();
+    void setSubjects(int c);
     Subject& getSubject(int index);
-
-    void printMarks() const;
-    void printAverages() const;
+    int getSubjectCount();
 };
+
