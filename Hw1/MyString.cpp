@@ -50,6 +50,13 @@ MyString::MyString(const MyString& other)
     strcpy_s(str, length + 1, other.str);
 }
 
+MyString::MyString(MyString&& other) {
+    str = other.str;
+    length = other.length;
+    other.str = nullptr;
+    other.length = 0;
+}
+
 bool MyString::MyStrStr(const char* subs) 
 {
     return strstr(str, subs) != nullptr;
@@ -105,4 +112,5 @@ int MyString::MyStrCmp(MyString& b)
     if (r < 0) return -1;
     if (r > 0) return 1;
 }
+
 
