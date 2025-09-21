@@ -9,6 +9,18 @@ Subject::~Subject()
 {
     if (name) delete[] name;
 }
+Subject::Subject(const Subject& other)
+{
+    if (other.name)
+    {
+        name = new char[strlen(other.name) + 1];
+        strcpy_s(name, strlen(other.name) + 1, other.name);
+    }
+    else
+    {
+        name = nullptr;
+    }
+}
 void Subject::setName(const char* n)
 {
     if (name) delete[] name;
@@ -19,3 +31,4 @@ const char* Subject::getName()
 {
     return name;
 }
+
