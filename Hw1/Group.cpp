@@ -15,6 +15,49 @@ Group::~Group()
     if (list) delete[] list;
     if (subList) delete[] subList;
 }
+Group::Group(const Group& other)
+{
+	if (other.name)
+	{
+		name = new char[strlen(other.name) + 1];
+		strcpy_s(name, strlen(other.name) + 1, other.name);
+	}
+	else
+	{
+		name = nullptr;
+	}
+
+	count_of_students = other.count_of_students;
+	count_of_subjects = other.count_of_subjects;
+
+	if (count_of_students > 0)
+	{
+		students = new Student[count_of_students];
+	}
+	else
+	{
+		students = nullptr;
+	}
+
+	if (count_of_subjects > 0)
+	{
+		subjects = new Subject[count_of_subjects];
+	}
+	else
+	{
+		subjects = nullptr;
+	}
+
+	for (int i = 0; i < count_of_students; i++)
+	{
+		students[i] = other.students[i];
+	}
+
+	for (int i = 0; i < count_of_subjects; i++)
+	{
+		subjects[i] = other.subjects[i];
+	}
+}
 void Group::setName(const char* n)
 {
     if (name) delete[] name;
@@ -53,3 +96,4 @@ int Group::getSubjectCount()
 {
     return countOfSubs;
 }
+
