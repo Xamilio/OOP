@@ -13,6 +13,7 @@ private:
 public:
     Group();
     ~Group();
+    Group(const Group& other);
     void setName(const char* n);
     const char* getName();
     void setStudents(int c);
@@ -22,4 +23,5 @@ public:
     Subject& getSubject(int index);
     int getSubjectCount();
 };
+
 
