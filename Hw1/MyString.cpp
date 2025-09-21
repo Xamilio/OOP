@@ -9,7 +9,7 @@ MyString::MyString()
     str = new char[length] {};
 }
 
-MyString::MyString(int s) 
+MyString::MyString(int s)
 {
     length = s;
     str = new char[length] {};
@@ -29,6 +29,21 @@ MyString::~MyString()
     length = 0;
 }
 
+MyString::MyString(const MyString& other)
+{
+    length = other.length;
+    str = new char[length + 1];
+    strcpy_s(str, length + 1, other.str);
+}
+
+MyString::MyString(MyString&& other)
+{
+    str = other.str;
+    length = other.length;
+    other.str = nullptr;
+    other.length = 0;
+}
+
 void MyString::print()
 {
     cout << str << "\n";
@@ -43,21 +58,7 @@ void MyString::MyStrcpy(MyString& obj)
     strcpy_s(str, length + 1, obj.str);
 }
 
-MyString::MyString(const MyString& other)
-{
-    length = other.length;
-    str = new char[length + 1];
-    strcpy_s(str, length + 1, other.str);
-}
-
-MyString::MyString(MyString&& other) {
-    str = other.str;
-    length = other.length;
-    other.str = nullptr;
-    other.length = 0;
-}
-
-bool MyString::MyStrStr(const char* subs) 
+bool MyString::MyStrStr(const char* subs)
 {
     return strstr(str, subs) != nullptr;
 }
@@ -87,7 +88,8 @@ void MyString::MyStrCat(MyString& b)
     str = buf;
     length = la + lb;
 }
-void MyString::MyDelChr(char c) 
+
+void MyString::MyDelChr(char c)
 {
     int cnt = 0;
     for (int i = 0; i < length; i++)
@@ -96,7 +98,7 @@ void MyString::MyDelChr(char c)
     }
     char* buf = new char[cnt + 1];
     int k = 0;
-    for (int i = 0; i < length; i++) 
+    for (int i = 0; i < length; i++)
     {
         if (str[i] != c) buf[k++] = str[i];
     }
@@ -111,6 +113,5 @@ int MyString::MyStrCmp(MyString& b)
     int r = strcmp(str, b.str);
     if (r < 0) return -1;
     if (r > 0) return 1;
+    return 0;
 }
-
-
