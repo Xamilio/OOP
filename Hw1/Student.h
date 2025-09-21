@@ -8,6 +8,7 @@ private:
 public:
     Student();
     ~Student();
+    Student(const Student& other);
     void setName(const char* n);
     const char* getName();
     void setMarks(int s);
@@ -15,5 +16,6 @@ public:
     int getMark(int index);
     int getSize();
 };
+
 
 
