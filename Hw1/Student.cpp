@@ -12,6 +12,33 @@ Student::~Student()
     if (name) delete[] name;
     if (marks) delete[] marks;
 }
+Student::Student(const Student& other)
+{
+    if (other.name)
+    {
+        name = new char[strlen(other.name) + 1];
+        strcpy_s(name, strlen(other.name) + 1, other.name);
+    }
+    else
+    {
+        name = nullptr;
+    }
+
+    count_of_marks = other.count_of_marks;
+
+    if (count_of_marks > 0 && other.marks)
+    {
+        marks = new int[count_of_marks];
+        for (int i = 0; i < count_of_marks; i++)
+        {
+            marks[i] = other.marks[i];
+        }
+    }
+    else
+    {
+        marks = nullptr;
+    }
+}
 void Student::setName(const char* n)
 {
     if (name) delete[] name;
@@ -42,3 +69,4 @@ int Student::getSize()
 {
     return size;
 }
+
