@@ -9,7 +9,7 @@ public:
     MyString(const char* st);
     ~MyString();
     MyString(const MyString& other);
-    MyString(MyString&& other) noexcept;
+    MyString(MyString&& other);
     void print();
     void MyStrcpy(MyString& obj);
     bool MyStrStr(const char* str);
