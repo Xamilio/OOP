@@ -9,13 +9,13 @@ public:
     MyString(const char* st);
     ~MyString();
     MyString(const MyString& other);
-    MyString(MyString&& other);
+    MyString(MyString&& other) noexcept;
     void print();
     void MyStrcpy(MyString& obj);
     bool MyStrStr(const char* str);
-    int  MyChr(char c);
-    int  MyStrLen();
+    int MyChr(char c);
+    int MyStrLen();
     void MyStrCat(MyString& b);
     void MyDelChr(char c);
-    int  MyStrCmp(MyString& b);
+    int MyStrCmp(MyString& b);
 };
