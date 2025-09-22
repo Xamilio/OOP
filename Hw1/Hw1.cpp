@@ -1,23 +1,15 @@
-﻿#include <iostream>
-#include "Group.h"
-using namespace std;
-
-int main()
+﻿#include "Library.h"
+int main() 
 {
-    Group g("Group A", 2, 2);
-    Subject s1, s2;
-    s1.setName("Math");
-    s2.setName("Physics");
-    g.setSubject(0, s1);
-    g.setSubject(1, s2);
-    Student st1("Ivan", 2);
-    Student st2("Oleg", 2);
-    st1.setMark(0, 5);
-    st1.setMark(1, 4);
-    st2.setMark(0, 3);
-    st2.setMark(1, 5);
-    g.setStudent(0, st1);
-    g.setStudent(1, st2);
-    g.printMarks();
-    g.printAverages();
+    Library lib;
+    Book b1("War and Peace", "Leo Tolstoy", "Novel");
+    Book b2("1984", "George Orwell", "Dystopia");
+    Reader r1("Ivan", 1);
+    Reader r2("Anna", 2);
+    lib.addBook(b1);
+    lib.addBook(b2);
+    lib.addReader(r1);
+    lib.addReader(r2);
+    lib.showBooks();
+    lib.showReaders();
 }
