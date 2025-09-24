@@ -115,3 +115,81 @@ int MyString::MyStrCmp(MyString& b)
     if (r > 0) return 1;
     return 0;
 }
+
+MyString& MyString::operator+=(const char* s)
+{
+    int la = strlen(str);
+    int lb = strlen(s);
+    char* buf = new char[la + lb + 1];
+    strcpy_s(buf, la + lb + 1, str);
+    strcat_s(buf, la + lb + 1, s);
+    delete[] str;
+    str = buf;
+    length = la + lb;
+    return *this;
+}
+
+MyString& MyString::operator-=(const char* s)
+{
+    char* pos = strstr(str, s);
+    if (!pos) return *this;
+
+    int start = pos - str;
+    int lsub = strlen(s);
+    int newlen = length - lsub;
+    char* buf = new char[newlen + 1];
+
+    strncpy_s(buf, newlen + 1, str, start);
+    strcpy_s(buf + start, newlen - start + 1, str + start + lsub);
+
+    delete[] str;
+    str = buf;
+    length = newlen;
+    return *this;
+}
+
+bool MyString::operator==(const MyString& other) const
+{
+    return strcmp(str, other.str) == 0;
+}
+
+bool MyString::operator!=(const MyString& other) const
+{
+    return !(*this == other);
+}
+
+bool MyString::operator>(const MyString& other) const
+{
+    return strcmp(str, other.str) > 0;
+}
+
+bool MyString::operator<(const MyString& other) const
+{
+    return strcmp(str, other.str) < 0;
+}
+
+MyString MyString::operator++(int)
+{
+    MyString temp(*this);
+    char* buf = new char[length + 2];
+    strcpy_s(buf, length + 2, str);
+    buf[length] = '!';
+    buf[length + 1] = '\0';
+    delete[] str;
+    str = buf;
+    length++;
+    return temp;
+}
+
+MyString MyString::operator--(int)
+{
+    if (length == 0) return *this;
+    MyString temp(*this);
+    length--;
+    char* buf = new char[length + 1];
+    strncpy_s(buf, length + 1, str, length);
+    buf[length] = '\0';
+    delete[] str;
+    str = buf;
+    return temp;
+}
