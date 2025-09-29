@@ -1,45 +1,19 @@
-﻿#include "MyString.h"
-#include <iostream>
-using namespace std;
+﻿#include "MyArray.h"
 
 int main()
 {
-    MyString text1("Hello");
-    MyString text2("World");
-    text1.print();
-    text2.print();
-    MyString copy = text1;
-    copy.print();
+    setlocale(LC_ALL, "ru");
+    MyArray a(3);
+    a[0] = 1; a[1] = 2; a[2] = 3;
+    MyArray b(2);
+    b[0] = 4; b[1] = 5;
+    cout << "Array a: "; a.print();
+    cout << "Array b: "; b.print();
 
-    if (text1.MyStrStr("el")) 
-    {
-        cout << "Substring found in Hello\n";
-    }
-    else 
-    {
-        cout << "Substring not found in Hello\n";
-    }
-
-    cout << "Index of 'o' in World: " << text2.MyChr('o') << endl;
-    cout << "Length of Hello: " << text1.MyStrLen() << endl;
-    text1.MyStrCat(text2);
-    cout << "After concatenation: ";
-    text1.print();
-
-    text1.MyDelChr('l');
-    cout << "After deleting 'l':";
-    text1.print();
-    int result = text2.MyStrCmp(copy);
-    if (result == 0)
-    {
-        cout << "World == Hello\n";
-    }
-    else if (result < 0)
-    {
-        cout << "World < Hello\n";
-    }
-    else
-    {
-        cout << "World > Hello\n";
-    }
+    MyArray c = a + b;
+    cout << "a + b: "; c.print();
+    ++a;
+    cout << "a после ++ : "; a.print();
+    --b;
+    cout << "b после -- : "; b.print();
 }

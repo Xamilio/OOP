@@ -128,13 +128,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Hw1.cpp" />
-    <ClCompile Include="MyString.cpp" />
+    <ClCompile Include="MyArray.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Source.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="MyString.h" />
+    <ClInclude Include="MyArray.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
