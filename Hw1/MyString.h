@@ -1,6 +1,6 @@
 #pragma once
 #include <iostream>
-
+using namespace std;
 class MyString
 {
     char* str;
@@ -12,6 +12,8 @@ public:
     ~MyString();
     MyString(const MyString& other);
     MyString(MyString&& other);
+    MyString(initializer_list<char> list);
+
 
     void print();
     void MyStrcpy(MyString& obj);
@@ -30,4 +32,5 @@ public:
     bool operator<(const MyString& other) const;
     MyString operator++(int);
     MyString operator--(int);
+
 };
