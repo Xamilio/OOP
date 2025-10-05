@@ -44,6 +44,19 @@ MyString::MyString(MyString&& other)
     other.length = 0;
 }
 
+MyString::MyString(std::initializer_list<char> list)
+{
+    length = static_cast<int>(list.size());
+    str = new char[length + 1];
+
+    int i = 0;
+    for (char c : list)
+    {
+        str[i++] = c;
+    }
+    str[length] = '\0';
+}
+
 void MyString::print()
 {
     cout << str << "\n";
@@ -193,3 +206,4 @@ MyString MyString::operator--(int)
     str = buf;
     return temp;
 }
+
