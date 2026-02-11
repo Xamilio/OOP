@@ -1,102 +1,103 @@
 ﻿#include <iostream>
-#include <fstream>
 #include <thread>
+#include <chrono>
 #include <mutex>
 
-using namespace std;
-
-//mutex mtx;
-//
-//void writeToFile(int id) {
-//    for (int i = 0; i < 5; i++) {
-//        mtx.lock();
-//        ofstream file("data.txt", ios::app);
-//        file << "Поток " << id << " запись " << i + 1 << endl;
-//        file.close();
-//        mtx.unlock();
-//    }
-//}
-//
-//void readFile() {
-//    ifstream file("data.txt");
-//    string line;
-//    while (getline(file, line)) {
-//        cout << line << endl;
-//    }
-//    file.close();
-//}
-//
-//int main() {
-//    ofstream clear("data.txt");
-//    clear.close();
-//
-//    thread t1(writeToFile, 1);
-//    thread t2(writeToFile, 2);
-//    thread t3(writeToFile, 3);
-//
-//    t1.join();
-//    t2.join();
-//    t3.join();
-//
-//    thread reader(readFile);
-//    reader.join();
-//
-//}
-
-class FileWriter {
-    string filename;
-    mutex mtx;
+class BankAccount {
+private:
+    std::string owner;
+    double balance;
+    std::mutex mtx;
 
 public:
-    FileWriter(const string& name) : filename(name) {}
-
-    void appendLine(const string& text) {
-        lock_guard<mutex> lock(mtx);
-        ofstream file(filename, ios::app);
-        file << text << endl;
-        file.close();
+    BankAccount(std::string name, double startBalance)
+        : owner(name), balance(startBalance) {
     }
 
-    void appendLineUnsafe(const string& text) {
-        ofstream file(filename, ios::app);
-        file << text << endl;
-        file.close();
+    void deposit(double amount) {
+        std::lock_guard<std::mutex> lock(mtx);
+        balance += amount;
+        std::cout << "Пополнение: " << amount << std::endl;
+    }
+
+    void withdraw(double amount) {
+        std::lock_guard<std::mutex> lock(mtx);
+        if (balance >= amount) {
+            balance -= amount;
+            std::cout << "Снятие: " << amount << std::endl;
+        }
+        else {
+            std::cout << "Недостаточно средств\n";
+        }
+    }
+
+    void addInterest() {
+        std::lock_guard<std::mutex> lock(mtx);
+        balance += balance * 0.01;
+    }
+
+    void printInfo() {
+        std::lock_guard<std::mutex> lock(mtx);
+        std::cout << "Владелец: " << owner
+            << " | Баланс: " << balance << std::endl;
     }
 };
 
-void writer(FileWriter& fw, int id) {
-    for (int i = 0; i < 5; i++) {
-        fw.appendLine("Поток " + to_string(id) + " запись " + to_string(i + 1));
-    }
-}
+bool running = true;
+std::mutex runMutex;
 
-void readFile(const string& filename) {
-    ifstream file(filename);
-    string line;
-    while (getline(file, line)) {
-        cout << line << endl;
+void interestWorker(BankAccount& acc) {
+    while (true) {
+        {
+            std::lock_guard<std::mutex> lock(runMutex);
+            if (!running)
+                break;
+        }
+
+        std::this_thread::sleep_for(std::chrono::seconds(2));
+        acc.addInterest();
+        std::cout << "[Начислен 1%]\n";
     }
-    file.close();
 }
 
 int main() {
-    ofstream clear("result.txt");
-    clear.close();
+    BankAccount account("Sasha", 1000);
 
-    FileWriter fw("result.txt");
+    std::thread t(interestWorker, std::ref(account));
 
-    thread t1(writer, ref(fw), 1);
-    thread t2(writer, ref(fw), 2);
-    thread t3(writer, ref(fw), 3);
+    int choice;
+    double amount;
 
-    t1.join();
-    t2.join();
-    t3.join();
+    while (true) {
+        std::cout << "\n1-Пополнить\n2-Снять\n3-Инфо\n0-Выход\n> ";
+        std::cin >> choice;
 
-    cout << "Готово" << endl;
+        if (choice == 0)
+            break;
 
-    thread reader(readFile, "result.txt");
-    reader.join();
+        switch (choice) {
+        case 1:
+            std::cout << "Сумма: ";
+            std::cin >> amount;
+            account.deposit(amount);
+            break;
+        case 2:
+            std::cout << "Сумма: ";
+            std::cin >> amount;
+            account.withdraw(amount);
+            break;
+        case 3:
+            account.printInfo();
+            break;
+        }
+    }
 
+    {
+        std::lock_guard<std::mutex> lock(runMutex);
+        running = false;
+    }
+
+    t.join();
+
+    std::cout << "Программа завершена.\n";
 }
-
