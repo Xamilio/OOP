@@ -1,102 +1,103 @@
-﻿#include <iostream>
+#include <iostream>
 #include <fstream>
 #include <thread>
 #include <mutex>
+#include <condition_variable>
 
-using namespace std;
+int* data = nullptr;
+int size = 0;
+int currentIndex = 0;
+bool finished = false;
 
-//mutex mtx;
-//
-//void writeToFile(int id) {
-//    for (int i = 0; i < 5; i++) {
-//        mtx.lock();
-//        ofstream file("data.txt", ios::app);
-//        file << "Поток " << id << " запись " << i + 1 << endl;
-//        file.close();
-//        mtx.unlock();
-//    }
-//}
-//
-//void readFile() {
-//    ifstream file("data.txt");
-//    string line;
-//    while (getline(file, line)) {
-//        cout << line << endl;
-//    }
-//    file.close();
-//}
-//
-//int main() {
-//    ofstream clear("data.txt");
-//    clear.close();
-//
-//    thread t1(writeToFile, 1);
-//    thread t2(writeToFile, 2);
-//    thread t3(writeToFile, 3);
-//
-//    t1.join();
-//    t2.join();
-//    t3.join();
-//
-//    thread reader(readFile);
-//    reader.join();
-//
-//}
+std::mutex mtx;
+std::condition_variable cv;
 
-class FileWriter {
-    string filename;
-    mutex mtx;
+void producer()
+{
+    std::ifstream file("input.txt");
 
-public:
-    FileWriter(const string& name) : filename(name) {}
-
-    void appendLine(const string& text) {
-        lock_guard<mutex> lock(mtx);
-        ofstream file(filename, ios::app);
-        file << text << endl;
-        file.close();
+    if (!file.is_open())
+    {
+        std::cout << "Ошибка открытия файла\n";
+        return;
     }
 
-    void appendLineUnsafe(const string& text) {
-        ofstream file(filename, ios::app);
-        file << text << endl;
-        file.close();
-    }
-};
+    int value;
+    int index = 0;
 
-void writer(FileWriter& fw, int id) {
-    for (int i = 0; i < 5; i++) {
-        fw.appendLine("Поток " + to_string(id) + " запись " + to_string(i + 1));
+    while (file >> value)
+    {
+        {
+            std::unique_lock<std::mutex> lock(mtx);
+            data[index++] = value;
+            currentIndex++;
+        }
+
+        cv.notify_one();
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+
+    {
+        std::unique_lock<std::mutex> lock(mtx);
+        finished = true;
+    }
+
+    cv.notify_all();
+}
+
+void consumer()
+{
+    int processedIndex = 0;
+
+    while (true)
+    {
+        std::unique_lock<std::mutex> lock(mtx);
+
+        cv.wait(lock, [] {
+            return currentIndex > 0 || finished;
+        });
+
+        while (processedIndex < currentIndex)
+        {
+            int value = data[processedIndex++];
+            lock.unlock();
+            std::cout << value * value << std::endl;
+            lock.lock();
+        }
+
+        if (finished && processedIndex >= currentIndex)
+        {
+            break;
+        }
     }
 }
 
-void readFile(const string& filename) {
-    ifstream file(filename);
-    string line;
-    while (getline(file, line)) {
-        cout << line << endl;
+int main()
+{
+    std::ifstream file("input.txt");
+    int temp;
+
+    while (file >> temp)
+    {
+        size++;
     }
     file.close();
-}
 
-int main() {
-    ofstream clear("result.txt");
-    clear.close();
+    if (size == 0)
+    {
+        std::cout << "Файл пустой\n";
+        return 0;
+    }
 
-    FileWriter fw("result.txt");
+    data = new int[size];
 
-    thread t1(writer, ref(fw), 1);
-    thread t2(writer, ref(fw), 2);
-    thread t3(writer, ref(fw), 3);
+    std::thread t1(producer);
+    std::thread t2(consumer);
 
     t1.join();
     t2.join();
-    t3.join();
 
-    cout << "Готово" << endl;
+    delete[] data;
 
-    thread reader(readFile, "result.txt");
-    reader.join();
-
+    return 0;
 }
-
