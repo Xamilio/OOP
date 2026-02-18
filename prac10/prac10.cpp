@@ -1,103 +1,84 @@
-﻿#include <iostream>
-#include <thread>
-#include <chrono>
-#include <mutex>
+#include <iostream>
+#include <cstddef>
 
-class BankAccount {
+class Buffer
+{
 private:
-    std::string owner;
-    double balance;
-    std::mutex mtx;
+    char* ptr;
+    std::size_t size_;
 
 public:
-    BankAccount(std::string name, double startBalance)
-        : owner(name), balance(startBalance) {
+    Buffer(std::size_t size)
+    {
+        size_ = size;
+        ptr = new char[size_];
     }
 
-    void deposit(double amount) {
-        std::lock_guard<std::mutex> lock(mtx);
-        balance += amount;
-        std::cout << "Пополнение: " << amount << std::endl;
+    ~Buffer()
+    {
+        delete[] ptr;
     }
 
-    void withdraw(double amount) {
-        std::lock_guard<std::mutex> lock(mtx);
-        if (balance >= amount) {
-            balance -= amount;
-            std::cout << "Снятие: " << amount << std::endl;
+    Buffer(const Buffer&) = delete;
+    Buffer& operator=(const Buffer&) = delete;
+
+    Buffer(Buffer&& other)
+    {
+        ptr = other.ptr;
+        size_ = other.size_;
+
+        other.ptr = nullptr;
+        other.size_ = 0;
+    }
+
+    Buffer& operator=(Buffer&& other)
+    {
+        if (this != &other)
+        {
+            delete[] ptr;
+
+            ptr = other.ptr;
+            size_ = other.size_;
+
+            other.ptr = nullptr;
+            other.size_ = 0;
         }
-        else {
-            std::cout << "Недостаточно средств\n";
-        }
+        return *this;
     }
 
-    void addInterest() {
-        std::lock_guard<std::mutex> lock(mtx);
-        balance += balance * 0.01;
+    char* data()
+    {
+        return ptr;
     }
 
-    void printInfo() {
-        std::lock_guard<std::mutex> lock(mtx);
-        std::cout << "Владелец: " << owner
-            << " | Баланс: " << balance << std::endl;
+    std::size_t size() const
+    {
+        return size_;
+    }
+
+    char* release()
+    {
+        char* temp = ptr;
+        ptr = nullptr;
+        size_ = 0;
+        return temp;
     }
 };
 
-bool running = true;
-std::mutex runMutex;
+int main()
+{
+    Buffer buf(5);
 
-void interestWorker(BankAccount& acc) {
-    while (true) {
-        {
-            std::lock_guard<std::mutex> lock(runMutex);
-            if (!running)
-                break;
-        }
+    buf.data()[0] = 'H';
+    buf.data()[1] = 'e';
+    buf.data()[2] = 'l';
+    buf.data()[3] = 'l';
+    buf.data()[4] = 'o';
 
-        std::this_thread::sleep_for(std::chrono::seconds(2));
-        acc.addInterest();
-        std::cout << "[Начислен 1%]\n";
-    }
-}
-
-int main() {
-    BankAccount account("Sasha", 1000);
-
-    std::thread t(interestWorker, std::ref(account));
-
-    int choice;
-    double amount;
-
-    while (true) {
-        std::cout << "\n1-Пополнить\n2-Снять\n3-Инфо\n0-Выход\n> ";
-        std::cin >> choice;
-
-        if (choice == 0)
-            break;
-
-        switch (choice) {
-        case 1:
-            std::cout << "Сумма: ";
-            std::cin >> amount;
-            account.deposit(amount);
-            break;
-        case 2:
-            std::cout << "Сумма: ";
-            std::cin >> amount;
-            account.withdraw(amount);
-            break;
-        case 3:
-            account.printInfo();
-            break;
-        }
-    }
-
+    for (std::size_t i = 0; i < buf.size(); i++)
     {
-        std::lock_guard<std::mutex> lock(runMutex);
-        running = false;
+        std::cout << buf.data()[i];
     }
 
-    t.join();
-
-    std::cout << "Программа завершена.\n";
+    std::cout << std::endl;
 }
