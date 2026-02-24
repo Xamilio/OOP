@@ -73,8 +73,6 @@ void fillArray(int id, counting_semaphore<2>& arraySemaphore) {
 
 int main() {
 
-    cout << "\n========== ЗАДАНИЕ 1 ==========\n";
-
     counting_semaphore<3> parking(3);
     thread cars[6];
 
@@ -87,8 +85,6 @@ int main() {
         cars[i].join();
 
 
-    cout << "\n========== ЗАДАНИЕ 2 ==========\n";
-
     counting_semaphore<2> fileSemaphore(2);
     thread writers[6];
 
@@ -97,9 +93,6 @@ int main() {
 
     for (int i = 0; i < 6; i++)
         writers[i].join();
-
-
-    cout << "\n========== ЗАДАНИЕ 3 ==========\n";
 
     counting_semaphore<2> arraySemaphore(2);
     thread workers[5];
