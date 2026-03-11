@@ -1,44 +1,69 @@
-﻿#include <iostream>
-#include"Transport.h"
-#include"Car.h"
-#include"Ship.h"
-#include"Track.h"
-#include "Airplane.h"
+#include <iostream>
 using namespace std;
 
-int main()
-{
-	int n;
-	cout << "Enter the type of transport (1 - car, 2 - track, 3 - ship, 4 - airplane): ";
-	cin >> n;
-	switch n
-	{
-		case 1:
-		{
-			Transport car;
-			car.Input();
-			car.Output();
-		}
-		case 2:
-		{
-			Transport Track;
-			track.Input();
-			track.Output();
-		}
-		case 3:
-		{
-			Transport Ship;
-			ship.Input();
-			ship.Output();
-		}
-		case 4:
-		{
-			Transport Airplane;
-			airplane.Input();
-			airplane.Output();
-		}
-		default:
-			cout << "Error";
-	}
 
+class Transport {
+public:
+    virtual void deliver() = 0;
+    virtual ~Transport() {}
+};
+
+
+class Truck : public Transport {
+public:
+    void deliver() override {
+        cout << "Delivery by truck (road transport)" << endl;
+    }
+};
+
+
+class Ship : public Transport {
+public:
+    void deliver() override {
+        cout << "Delivery by ship (sea transport)" << endl;
+    }
+};
+
+class Logistics {
+public:
+    virtual Transport* createTransport() = 0;
+
+    void planDelivery() {
+        Transport* t = createTransport();
+        t->deliver();
+        delete t;
+    }
+
+    virtual ~Logistics() {}
+};
+
+class RoadLogistics : public Logistics {
+public:
+    Transport* createTransport() override {
+        return new Truck();
+    }
+};
+
+class SeaLogistics : public Logistics {
+public:
+    Transport* createTransport() override {
+        return new Ship();
+    }
+};
+
+int main() {
+    Logistics* logistics;
+
+    int choice;
+    cout << "1 - Road delivery\n2 - Sea delivery\nChoose: ";
+    cin >> choice;
+
+    if (choice == 1)
+        logistics = new RoadLogistics();
+    else
+        logistics = new SeaLogistics();
+
+    logistics->planDelivery();
+
+    delete logistics;
 }
