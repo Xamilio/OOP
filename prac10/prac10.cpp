@@ -1,95 +1,108 @@
 #include <iostream>
-
+#include <string>
 using namespace std;
 
-class Observer {
+class IMediator
+{
 public:
-    virtual void update(float temperature) = 0;
-    virtual ~Observer() {}
+    virtual void notify(string event) = 0;
 };
 
-class Subject {
-protected:
-    Observer* observers[10];
-    int count = 0;
+class Light
+{
+private:
+    bool state;
 
 public:
-    void attach(Observer* obs) {
-        if (count < 10) {
-            observers[count++] = obs;
-        }
+    Light()
+    {
+        state = false;
     }
 
-    void detach(Observer* obs) {
-        for (int i = 0; i < count; i++) {
-            if (observers[i] == obs) {
-                for (int j = i; j < count - 1; j++) {
-                    observers[j] = observers[j + 1];
-                }
-                count--;
-                break;
+    void turnOn()
+    {
+        state = true;
+        cout << "Light is ON" << endl;
+    }
+
+    void turnOff()
+    {
+        state = false;
+        cout << "Light is OFF" << endl;
+    }
+
+    bool isOn()
+    {
+        return state;
+    }
+};
+
+class Switch
+{
+private:
+    IMediator* mediator;
+
+public:
+    Switch(IMediator* mediator)
+    {
+        this->mediator = mediator;
+    }
+
+    void press()
+    {
+        mediator->notify("switch_pressed");
+    }
+};
+
+class RoomMediator : public IMediator
+{
+private:
+    Light* light;
+
+public:
+    RoomMediator(Light* light)
+    {
+        this->light = light;
+    }
+
+    void notify(string event) override
+    {
+        if (event == "switch_pressed")
+        {
+            if (light->isOn())
+            {
+                light->turnOff();
+            }
+            else
+            {
+                light->turnOn();
             }
         }
     }
+};
 
-    void notify(float temperature) {
-        for (int i = 0; i < count; i++) {
-            observers[i]->update(temperature);
+int main()
+{
+    Light light;
+    RoomMediator mediator(&light);
+    Switch sw(&mediator);
+
+    string command;
+
+    while (true)
+    {
+        cout << "Enter command (press / exit): ";
+        cin >> command;
+
+        if (command == "press")
+        {
+            sw.press();
+        }
+        else if (command == "exit")
+        {
+            break;
         }
     }
-};
-
-class TemperatureSensor : public Subject {
-private:
-    float temperature;
-
-public:
-    void setTemperature(float temp) {
-        temperature = temp;
-        notify(temperature);
-    }
-
-    float getTemperature() {
-        return temperature;
-    }
-};
-
-class ConsoleDisplay : public Observer {
-public:
-    void update(float temperature) override {
-        cout << "Температура: " << temperature << endl;
-    }
-};
-
-class Logger : public Observer {
-public:
-    void update(float temperature) override {
-        cout << "[LOG] Новая температура: " << temperature << endl;
-    }
-};
-
-class Alarm : public Observer {
-public:
-    void update(float temperature) override {
-        if (temperature >= 30) {
-            cout << "!!! ВНИМАНИЕ: высокая температура !!!" << endl;
-        }
-    }
-};
-
-int main() {
-    TemperatureSensor sensor;
-
-    ConsoleDisplay display;
-    Logger logger;
-    Alarm alarm;
-
-    sensor.attach(&display);
-    sensor.attach(&logger);
-    sensor.attach(&alarm);
-
-    sensor.setTemperature(25);
-    sensor.setTemperature(30);
-    sensor.setTemperature(35);
 
     return 0;
+}
