@@ -1,108 +1,108 @@
 #include <iostream>
-#include <string>
 using namespace std;
 
-class IMediator
-{
-public:
-    virtual void notify(string event) = 0;
-};
-
-class Light
-{
+class PlayerMemento {
 private:
-    bool state;
+    int health;
+    int energy;
+    int gold;
+    int x, y;
 
 public:
-    Light()
-    {
-        state = false;
-    }
+    PlayerMemento(int h, int e, int g, int xPos, int yPos)
+        : health(h), energy(e), gold(g), x(xPos), y(yPos) {}
 
-    void turnOn()
-    {
-        state = true;
-        cout << "Light is ON" << endl;
-    }
-
-    void turnOff()
-    {
-        state = false;
-        cout << "Light is OFF" << endl;
-    }
-
-    bool isOn()
-    {
-        return state;
-    }
+    int getHealth() { return health; }
+    int getEnergy() { return energy; }
+    int getGold() { return gold; }
+    int getX() { return x; }
+    int getY() { return y; }
 };
 
-class Switch
-{
+class Player {
 private:
-    IMediator* mediator;
+    int health;
+    int energy;
+    int gold;
+    int x, y;
 
 public:
-    Switch(IMediator* mediator)
-    {
-        this->mediator = mediator;
+    Player(int h, int e, int g, int xPos, int yPos)
+        : health(h), energy(e), gold(g), x(xPos), y(yPos) {}
+
+    void makeMove() {
+        energy -= 10;
+        gold += 5;
+        x += 1;
+        y += 2;
+        if (energy < 0) energy = 0;
     }
 
-    void press()
-    {
-        mediator->notify("switch_pressed");
+    PlayerMemento save() {
+        return PlayerMemento(health, energy, gold, x, y);
+    }
+
+    void restore(PlayerMemento m) {
+        health = m.getHealth();
+        energy = m.getEnergy();
+        gold = m.getGold();
+        x = m.getX();
+        y = m.getY();
+    }
+
+    void showState() {
+        cout << "HP: " << health
+             << " | Energy: " << energy
+             << " | Gold: " << gold
+             << " | Position: (" << x << ", " << y << ")\n";
     }
 };
 
-class RoomMediator : public IMediator
-{
+class SaveSlots {
 private:
-    Light* light;
+    PlayerMemento* slots[3];
 
 public:
-    RoomMediator(Light* light)
-    {
-        this->light = light;
+    SaveSlots() {
+        for (int i = 0; i < 3; i++)
+            slots[i] = nullptr;
     }
 
-    void notify(string event) override
-    {
-        if (event == "switch_pressed")
-        {
-            if (light->isOn())
-            {
-                light->turnOff();
-            }
-            else
-            {
-                light->turnOn();
-            }
-        }
+    void saveToSlot(int slot, PlayerMemento m) {
+        if (slot < 1 || slot > 3) return;
+        if (slots[slot - 1] != nullptr)
+            delete slots[slot - 1];
+        slots[slot - 1] = new PlayerMemento(m);
+    }
+
+    PlayerMemento loadFromSlot(int slot) {
+        return *slots[slot - 1];
+    }
+
+    ~SaveSlots() {
+        for (int i = 0; i < 3; i++)
+            if (slots[i] != nullptr)
+                delete slots[i];
     }
 };
 
-int main()
-{
-    Light light;
-    RoomMediator mediator(&light);
-    Switch sw(&mediator);
+int main() {
+    Player player(100, 100, 50, 0, 0);
+    SaveSlots saves;
 
-    string command;
+    player.showState();
 
-    while (true)
-    {
-        cout << "Enter command (press / exit): ";
-        cin >> command;
+    player.makeMove();
+    player.showState();
 
-        if (command == "press")
-        {
-            sw.press();
-        }
-        else if (command == "exit")
-        {
-            break;
-        }
-    }
+    saves.saveToSlot(1, player.save());
+
+    player.makeMove();
+    player.makeMove();
+    player.showState();
+
+    player.restore(saves.loadFromSlot(1));
+    player.showState();
 
     return 0;
 }
