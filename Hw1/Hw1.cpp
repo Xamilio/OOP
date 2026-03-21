@@ -1,74 +1,97 @@
-﻿#include <iostream>
+#include <iostream>
+#include <string>
+
 using namespace std;
 
-class Fraction
-{
-    int numerator;  
-    int denominator;
-
+class Component {
 public:
-    void Init(int a, int b)
-    {
-        numerator = a;
-        if (b == 0) {
-            cout << "Ошибка: знаменатель = 1" << endl;
-            denominator = 1;
-        }
-        else {
-            denominator = b;
-        }
+    virtual int getPrice() = 0;
+    virtual void add(Component* c) {}
+    virtual void print(string indent = "") = 0;
+    virtual ~Component() {}
+};
+
+class Item : public Component {
+    string name;
+    int price;
+public:
+    Item(string n, int p) {
+        name = n;
+        price = p;
     }
 
-    void Init()
-    {
-        numerator = rand() % 20;
-        denominator = (rand() % 9) + 1;
+    int getPrice() override {
+        return price;
     }
 
-    void Print()
-    {
-        cout << "Дробь: " << numerator << "/" << denominator << endl;
-    }
-
-    void Sum(Fraction& b)
-    {
-        int num = numerator * b.denominator + b.numerator * denominator;
-        int den = denominator * b.denominator;
-        cout << "Сумма: " << num << "/" << den << endl;
-    }
-
-    void Sub(Fraction& b)
-    {
-        int num = numerator * b.denominator - b.numerator * denominator;
-        int den = denominator * b.denominator;
-        cout << "Разность: " << num << "/" << den << endl;
-    }
-
-    void Mul(Fraction& b)
-    {
-        int num = numerator * b.numerator;
-        int den = denominator * b.denominator;
-        cout << "Произведение: " << num << "/" << den << endl;
-    }
-
-    void Div(Fraction& b)
-    {
-        int num = numerator * b.denominator;
-        int den = denominator * b.numerator;
-        cout << "Частное: " << num << "/" << den << endl;
+    void print(string indent = "") override {
+        cout << indent << name << " : " << price << endl;
     }
 };
 
-int main()
-{
-    Fraction A, B;
+class Composite : public Component {
+    string name;
+    Component* children[100];
+    int count;
+public:
+    Composite(string n) {
+        name = n;
+        count = 0;
+    }
 
-    A.Init(2, 3);
-    A.Print();
-    B.Init(3, 4);
-    B.Print();
-    A.Sum(B);
-    A.Sub(B);
-    A.Mul(B);
-    A.Div(B);
+    void add(Component* c) override {
+        children[count++] = c;
+    }
+
+    int getPrice() override {
+        int sum = 0;
+        for (int i = 0; i < count; i++) {
+            sum += children[i]->getPrice();
+        }
+        return sum;
+    }
+
+    void print(string indent = "") override {
+        cout << indent << name << endl;
+        for (int i = 0; i < count; i++) {
+            children[i]->print(indent + "  ");
+        }
+    }
+};
+
+int main() {
+    Composite* office = new Composite("Офис");
+
+    Composite* reception = new Composite("Приемная");
+    reception->add(new Item("Журнальный столик", 200));
+    reception->add(new Item("Мягкий диван", 500));
+    reception->add(new Item("Стол секретаря", 300));
+    reception->add(new Item("Кулер", 150));
+
+    Composite* room1 = new Composite("Аудитория 1");
+    room1->add(new Item("10 столов", 1000));
+    room1->add(new Item("Доска", 200));
+    room1->add(new Item("Стол учителя", 300));
+
+    Composite* computerRoom = new Composite("Компьютерная аудитория");
+    Composite* tables = new Composite("10 компьютерных столов");
+
+    for (int i = 0; i < 10; i++) {
+        Composite* table = new Composite("Стол с компьютером");
+        table->add(new Item("Компьютер", 800));
+        tables->add(table);
+    }
+
+    computerRoom->add(tables);
+    computerRoom->add(new Item("Доска", 200));
+
+    office->add(reception);
+    office->add(room1);
+    office->add(computerRoom);
+
+    office->print();
+
+    cout << "\nОбщая стоимость: " << office->getPrice() << endl;
+
+    return 0;
 }
